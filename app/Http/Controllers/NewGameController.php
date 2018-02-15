@@ -2,22 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use App\Hangman;
+use App\Factories\HangmanFactory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use App\Exceptions\ErrorCreatingGameException;
 
 class NewGameController extends Controller
 {
     public function store()
     {
         try {
-            Hangman::create(Auth::user());
+            HangmanFactory::create(Auth::user());
+
+            Session::flash('success', "You've started a new game!");
 
             return redirect()->to(route('play'));
-        } catch (Exception $e) {
-            return back()->withErrors([
-                'game' => $e->getMessage(),
-            ]);
+        } catch (ErrorCreatingGameException $e) {
+            Session::flash('error', $e->getMessage());
+
+            return back();
         }
     }
 }

@@ -44,7 +44,7 @@ class NewGameTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('new-game'));
 
-        $response->assertSessionHasErrors('game');
+        $response->assertSessionHas('error');
         $this->assertCount(1, $user->fresh()->games);
     }
 
@@ -69,7 +69,7 @@ class NewGameTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('new-game'));
 
-        $response->assertSessionHasErrors('game');
+        $response->assertSessionHas('error');
         $this->assertCount(0, $user->fresh()->games);
     }
 }
