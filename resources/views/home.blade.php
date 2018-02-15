@@ -14,7 +14,16 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    @if (Auth::user()->hasGameInProgress())
+                        <form method="GET" action="{{ route('play') }}">
+                            <button class="btn btn-lg btn-info">Continue Game</button>
+                        </form>
+                    @else
+                        <form method="POST" action="{{ route('new-game') }}">
+                            {{ csrf_field() }}
+                            <button class="btn btn-lg btn-info">Start Game</button>
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>

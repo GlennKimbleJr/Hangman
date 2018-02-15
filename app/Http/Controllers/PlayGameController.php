@@ -8,6 +8,6 @@ class PlayGameController extends Controller
 {
     public function index()
     {
-        
+        return view('play');
     }
 }
