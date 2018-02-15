@@ -28,7 +28,7 @@ class Game extends Model
         $phrases = Phrase::forGame(self::MIN_LETTER_COUNT)->limit(self::TOTAL_ROUNDS)->get();
 
         if ($phrases->count() < self::TOTAL_ROUNDS) {
-            throw new NotEnoughPhrasesException();
+            throw new NotEnoughPhrasesException('There are not enough phrases needed for the required number of rounds.');
         }
 
         $phrases->each(function ($phrase) {

@@ -25,12 +25,12 @@ class NewGameTest extends TestCase
     public function a_user_can_start_a_new_game()
     {
         factory(Phrase::class, 10)->create();
-        
+
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user)->post(route('new-game'));
 
-        $response->assertStatus(200);
+        $response->assertRedirect(route('play'));
         $this->assertCount(1, $user->fresh()->games);
     }
 
@@ -57,7 +57,6 @@ class NewGameTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('new-game'));
 
-        $response->assertStatus(200);
         $this->assertCount(10, $user->fresh()->games->first()->rounds);
     }
 
@@ -70,7 +69,7 @@ class NewGameTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('new-game'));
 
-        $response->assertSessionHasErrors('system');
+        $response->assertSessionHasErrors('game');
         $this->assertCount(0, $user->fresh()->games);
     }
 }
