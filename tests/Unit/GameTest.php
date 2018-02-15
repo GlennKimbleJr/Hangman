@@ -54,16 +54,13 @@ class GameTest extends TestCase
         $this->assertCount(10, $game->fresh()->rounds);
     }
 
-    /**
-     * @test
-     * @expectedException App\Exceptions\NotEnoughPhrasesException
-     */
-    public function create_rounds_will_throw_an_exception_if_there_are_less_than_10_phrases_found()
+    /** @test */
+    public function create_rounds_returns_false_if_there_are_less_than_10_phrases_found()
     {
         factory(Phrase::class, 9)->create();
 
         $game = factory(Game::class)->create();
 
-        $game->createRounds();
+        $this->assertFalse($game->createRounds());
     }
 }

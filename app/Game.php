@@ -4,7 +4,6 @@ namespace App;
 
 use App\Phrase;
 use Illuminate\Database\Eloquent\Model;
-use App\Exceptions\NotEnoughPhrasesException;
 
 class Game extends Model
 {
@@ -28,11 +27,13 @@ class Game extends Model
         $phrases = Phrase::forGame(self::MIN_LETTER_COUNT)->limit(self::TOTAL_ROUNDS)->get();
 
         if ($phrases->count() < self::TOTAL_ROUNDS) {
-            throw new NotEnoughPhrasesException('There are not enough phrases needed for the required number of rounds.');
+            return false;
         }
 
         $phrases->each(function ($phrase) {
             $phrase->addToGame($this);
         });
+
+        return true;
     }
 }
