@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Game;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -26,4 +27,16 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function games()
+    {
+        return $this->hasMany(Game::class);
+    }
+
+    public function hasGameInProgress()
+    {
+        return $this->games->reject(function ($game) {
+            return $game->isComplete();
+        })->isNotEmpty();
+    }
 }
