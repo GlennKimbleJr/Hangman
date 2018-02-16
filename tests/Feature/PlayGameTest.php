@@ -46,4 +46,21 @@ class PlayGameTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee($user->fresh()->getActiveGame()->getDisplayPhrase());
     }
+
+    /** @test */
+    public function incorrect_guesses_will_be_displayed()
+    {
+        $phrases = factory(Phrase::class, 10)->create();
+        $user = factory(User::class)->create();
+        HangmanFactory::create($user);
+
+        $response = $this->actingAs($user->fresh())->post(route('guess-phrase'), [
+            'guess' => 'asdf',
+        ]);
+
+        $response = $this->actingAs($user->fresh())->get(route('play'));
+
+        $response->assertStatus(200);
+        $response->assertSee('ASDF');
+    }
 }

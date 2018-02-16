@@ -18,8 +18,10 @@ class PlayGameController extends Controller
             return redirect()->to(route('home'));
         }
 
+        $game = $user->getActiveGame();
         return view('play', [
-            'phrase' => $user->getActiveGame()->getDisplayPhrase(),
+            'phrase' => $game->getDisplayPhrase(),
+            'guesses' => $game->getActiveRound()->getIncorretGuesses(),
         ]);
     }
 }

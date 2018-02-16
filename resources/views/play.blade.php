@@ -15,6 +15,19 @@
     </div>
     <br>
 
+    @if ($guesses->count())
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card-body bg-danger">
+                @foreach ($guesses as $guess)
+                    <span class="badge badge-pill badge-warning">{{ $guess->guess }}</span>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    <br>
+    @endif
+
     <div class="row justify-content-center">
         <div class="col-md-4">
             <div class="card-body bg-info">
