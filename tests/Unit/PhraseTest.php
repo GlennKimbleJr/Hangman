@@ -22,10 +22,10 @@ class PhraseTest extends TestCase
             'text' => 'aaaa',
         ]);
 
-        $phrases = Phrase::forGame(5)->get();
+        $phrases = Phrase::forGame(5, 2);
 
-        $this->assertTrue($phrases->contains($longEnough));
-        $this->assertFalse($phrases->contains($tooShort));
+        $this->assertCount(1, $phrases);
+        $this->assertEquals($longEnough->id, $phrases->first()->id);
     }
 
     /** @test */
@@ -35,9 +35,9 @@ class PhraseTest extends TestCase
             'text' => 'aa aa ',
         ]);
 
-        $phrases = Phrase::forGame(5)->get();
+        $phrases = Phrase::forGame(5, 1);
 
-        $this->assertFalse($phrases->contains($tooShort));
+        $this->assertEmpty($phrases);
     }
 
     /** @test */

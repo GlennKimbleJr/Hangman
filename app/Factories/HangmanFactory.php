@@ -2,12 +2,19 @@
 
 namespace App\Factories;
 
+use App\Game;
 use App\User;
+use App\Phrase;
+use App\Collections\PhraseCollection;
 use App\Exceptions\ErrorCreatingGameException;
 
 class HangmanFactory
 {
-    public static function create(User $user)
+    public const MIN_LETTER_COUNT = 5;
+
+    public const TOTAL_ROUNDS = 10;
+
+    public static function create(User $user, PhraseCollection $phraseCollector)
     {
         if ($user->hasGameInProgress()) {
             throw new ErrorCreatingGameException(
@@ -17,7 +24,7 @@ class HangmanFactory
 
         $game = $user->games()->create([]);
 
-        if (!$game->createRounds()) {
+        if (!self::createRounds($game, $phraseCollector)) {
             $game->delete();
 
             throw new ErrorCreatingGameException(
@@ -26,5 +33,18 @@ class HangmanFactory
         }
 
         return $game;
+    }
+
+    private static function createRounds(Game $game, $phraseCollector)
+    {
+        if ($phraseCollector->hasTooFewRounds(self::TOTAL_ROUNDS)) {
+            return false;
+        }
+
+        $phraseCollector->each(function ($phrase) use ($game) {
+            $phrase->addToGame($game);
+        });
+
+        return true;
     }
 }

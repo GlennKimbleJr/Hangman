@@ -28,7 +28,7 @@ class NewGameTest extends TestCase
 
         $user = factory(User::class)->create();
 
-        $response = $this->actingAs($user)->post(route('new-game'));
+        $response = $this->createNewGame($user);
 
         $response->assertRedirect(route('play'));
         $this->assertCount(1, $user->fresh()->games);
@@ -42,7 +42,7 @@ class NewGameTest extends TestCase
         $round = factory(Round::class)->create();
         $round->game()->associate($game)->save();
 
-        $response = $this->actingAs($user)->post(route('new-game'));
+        $response = $this->createNewGame($user);
 
         $response->assertSessionHas('error');
         $this->assertCount(1, $user->fresh()->games);
@@ -55,7 +55,7 @@ class NewGameTest extends TestCase
 
         $user = factory(User::class)->create();
 
-        $response = $this->actingAs($user)->post(route('new-game'));
+        $response = $this->createNewGame($user);
 
         $this->assertCount(10, $user->fresh()->games->first()->rounds);
     }
@@ -67,7 +67,7 @@ class NewGameTest extends TestCase
 
         $user = factory(User::class)->create();
 
-        $response = $this->actingAs($user)->post(route('new-game'));
+        $response = $this->createNewGame($user);
 
         $response->assertSessionHas('error');
         $this->assertCount(0, $user->fresh()->games);

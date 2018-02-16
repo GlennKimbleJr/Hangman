@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\User;
 use App\Phrase;
 use Tests\TestCase;
-use App\Factories\HangmanFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class GuessALetterTest extends TestCase
@@ -41,7 +40,7 @@ class GuessALetterTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
 
         $response = $this->actingAs($user->fresh())->post(route('guess-letter'), [
             'guess' => null,
@@ -56,7 +55,7 @@ class GuessALetterTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
 
         $response = $this->actingAs($user->fresh())->post(route('guess-letter'), [
             'guess' => '1',
@@ -71,7 +70,7 @@ class GuessALetterTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
 
         $response = $this->actingAs($user->fresh())->post(route('guess-letter'), [
             'guess' => 'ab',
@@ -86,7 +85,7 @@ class GuessALetterTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
         $user = $user->fresh();
         $user->getActiveGame()->getActiveRound()->phrase()->update([
             'text' => 'test',
@@ -106,7 +105,7 @@ class GuessALetterTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
         $user = $user->fresh();
         $user->getActiveGame()->getActiveRound()->phrase()->update([
             'text' => 'test',
@@ -126,7 +125,7 @@ class GuessALetterTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
         $user = $user->fresh();
         $user->getActiveGame()->getActiveRound()->phrase()->update([
             'text' => 'test',
@@ -155,7 +154,7 @@ class GuessALetterTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
         $user = $user->fresh();
         $user->getActiveGame()->getActiveRound()->phrase()->update([
             'text' => 'test',

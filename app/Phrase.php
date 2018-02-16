@@ -3,16 +3,24 @@
 namespace App;
 
 use App\Game;
+use App\Collections\PhraseCollection;
 use Illuminate\Database\Eloquent\Model;
 
 class Phrase extends Model
 {
     protected $guarded = [];
 
-    public function scopeforGame($query, $letterCount)
+    public function newCollection(array $models = [])
     {
-        return $query->inRandomOrder()
-            ->whereRaw("LENGTH(replace(text, ' ', '')) >= ?", [$letterCount]);
+        return new PhraseCollection($models);
+    }
+
+    public function scopeforGame($query, $letterCount, $totalRounds)
+    {
+        return $query->whereRaw("LENGTH(replace(text, ' ', '')) >= ?", [$letterCount])
+            ->inRandomOrder()
+            ->limit($totalRounds)
+            ->get();
     }
 
     public function getTextAttribute()

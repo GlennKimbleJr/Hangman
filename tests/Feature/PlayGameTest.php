@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\User;
 use App\Phrase;
 use Tests\TestCase;
-use App\Factories\HangmanFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PlayGameTest extends TestCase
@@ -39,7 +38,7 @@ class PlayGameTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
 
         $response = $this->actingAs($user->fresh())->get(route('play'));
 
@@ -52,7 +51,7 @@ class PlayGameTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
 
         $response = $this->actingAs($user->fresh())->post(route('guess-phrase'), [
             'guess' => 'asdf',
@@ -69,7 +68,7 @@ class PlayGameTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
 
         $game = $user->fresh()->getActiveGame();
         $game->getActiveRound()->markAsWon();

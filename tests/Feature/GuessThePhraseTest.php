@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\User;
 use App\Phrase;
 use Tests\TestCase;
-use App\Factories\HangmanFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class GuessThePhraseTest extends TestCase
@@ -41,7 +40,7 @@ class GuessThePhraseTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
 
         $response = $this->actingAs($user->fresh())->post(route('guess-phrase'), [
             'guess' => null,
@@ -56,7 +55,7 @@ class GuessThePhraseTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
         $user = $user->fresh();
         $user->getActiveGame()->getActiveRound()->phrase()->update([
             'text' => 'correct phrase',
@@ -76,7 +75,7 @@ class GuessThePhraseTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
         $user = $user->fresh();
         $user->getActiveGame()->getActiveRound()->phrase()->update([
             'text' => 'correct phrase',
@@ -96,7 +95,7 @@ class GuessThePhraseTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
         $user = $user->fresh();
         $user->getActiveGame()->getActiveRound()->phrase()->update([
             'text' => 'test',
@@ -125,7 +124,7 @@ class GuessThePhraseTest extends TestCase
     {
         $phrases = factory(Phrase::class, 10)->create();
         $user = factory(User::class)->create();
-        HangmanFactory::create($user);
+        $this->createNewGame($user);
         $user = $user->fresh();
         $user->getActiveGame()->getActiveRound()->phrase()->update([
             'text' => 'test phrase',
