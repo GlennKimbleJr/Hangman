@@ -11,30 +11,20 @@ class RoundTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function is_complete_returns_false_if_winner_is_null()
+    public function is_complete_returns_false_if_completed_at_is_null()
     {
         $round = factory(Round::class)->create([
-            'winner' => null,
+            'completed_at' => null,
         ]);
 
         $this->assertFalse($round->isComplete());
     }
 
     /** @test */
-    public function is_complete_returns_true_if_winner_is_true()
+    public function is_complete_returns_true_if_completed_at_is_not_null()
     {
         $round = factory(Round::class)->create([
-            'winner' => true,
-        ]);
-
-        $this->assertTrue($round->isComplete());
-    }
-
-    /** @test */
-    public function is_complete_returns_true_if_winner_is_false()
-    {
-        $round = factory(Round::class)->create([
-            'winner' => false,
+            'completed_at' => now(),
         ]);
 
         $this->assertTrue($round->isComplete());

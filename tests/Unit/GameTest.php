@@ -21,7 +21,7 @@ class GameTest extends TestCase
         $incompleteRound->game()->associate($game)->save();
 
         $completeRound = factory(Round::class)->create([
-            'winner' => true,
+            'completed_at' => now(),
         ]);
         $completeRound->game()->associate($game)->save();
 
@@ -34,7 +34,7 @@ class GameTest extends TestCase
         $game = factory(Game::class)->create();
 
         $completeRound = factory(Round::class)->create([
-            'winner' => true,
+            'completed_at' => now(),
         ]);
 
         $completeRound->game()->associate($game)->save();

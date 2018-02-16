@@ -22,7 +22,7 @@ class UserTest extends TestCase
 
         $completeGame = $user->games()->create([]);
         $completeRound = factory(Round::class)->create([
-            'winner' => true,
+            'completed_at' => now(),
         ]);
         $completeRound->game()->associate($completeGame)->save();
 
@@ -36,7 +36,7 @@ class UserTest extends TestCase
 
         $completeGame = $user->games()->create([]);
         $completeRound = factory(Round::class)->create([
-            'winner' => true,
+            'completed_at' => now(),
         ]);
         $completeRound->game()->associate($completeGame)->save();
 
@@ -54,7 +54,7 @@ class UserTest extends TestCase
 
         $completeGame = $user->games()->create([]);
         $completeRound = factory(Round::class)->create([
-            'winner' => true,
+            'completed_at' => now(),
         ]);
         $completeRound->game()->associate($completeGame)->save();
 

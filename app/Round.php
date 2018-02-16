@@ -11,6 +11,12 @@ class Round extends Model
 {
     protected $guarded = [];
 
+    protected $dates = ['completed_at'];
+
+    protected $casts = [
+        'won' => 'boolean',
+    ];
+
     public function game()
     {
         return $this->belongsTo(Game::class);
@@ -28,6 +34,6 @@ class Round extends Model
 
     public function isComplete()
     {
-        return !is_null($this->winner);
+        return (bool) $this->completed_at;
     }
 }

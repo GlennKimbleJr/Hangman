@@ -13,6 +13,7 @@ $factory->define(Round::class, function (Faker $faker) {
         'phrase_id' => function () {
             return factory(Phrase::class)->create()->id;
         },
-        'winner' => null,
+        'won' => false,
+        'completed_at' => null,
     ];
 });
