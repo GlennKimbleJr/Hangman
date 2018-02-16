@@ -66,7 +66,7 @@ class GuessThePhraseTest extends TestCase
             'guess' => 'correct phrase',
         ]);
 
-        $guess = $user->fresh()->getActiveGame()->getActiveRound()->guesses;
+        $guess = $user->fresh()->getActiveGame()->rounds->first()->guesses;
         $this->assertCount(1, $guess);
         $this->assertTrue($guess->first()->is_correct);
     }
