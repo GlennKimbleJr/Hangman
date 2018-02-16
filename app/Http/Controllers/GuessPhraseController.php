@@ -27,7 +27,10 @@ class GuessPhraseController extends Controller
         ]);
 
         if (!$isCorrect && $game->getActiveRound()->maxGuessesReached()) {
+            Session::flash('error', 'failed');
             $game->getActiveRound()->markAsLost();
+
+            return redirect()->to(route('play'));
         }
 
         if ($isCorrect) {
