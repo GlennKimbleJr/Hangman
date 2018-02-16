@@ -11,6 +11,35 @@ class GuessALetterTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp()
+    {
+        parent::setUp();
+
+        factory(Phrase::class, 10)->create();
+
+        $this->user = factory(User::class)->create();
+    }
+
+    protected function guessALetter($letter = null)
+    {
+        $response = $this->actingAs($this->user)->post(route('guess-letter'), [
+            'guess' => $letter,
+        ]);
+
+        $this->user = $this->user->fresh();
+
+        return $response;
+    }
+
+    protected function setActiveRoundPhrase($phrase)
+    {
+        $this->user->getActiveGame()->getActiveRound()->phrase()->update([
+            'text' => $phrase,
+        ]);
+
+        $this->user = $this->user->fresh();
+    }
+
     /** @test */
     public function a_guest_cannot_guess()
     {
@@ -23,12 +52,9 @@ class GuessALetterTest extends TestCase
     /** @test */
     public function a_user_cannot_guess_without_a_game_in_progress()
     {
-        $user = factory(User::class)->create();
-        $this->assertFalse($user->hasGameInProgress());
+        $this->assertFalse($this->user->hasGameInProgress());
 
-        $response = $this->actingAs($user)->post(route('guess-letter'), [
-            'guess' => 'A',
-        ]);
+        $response = $this->guessALetter('A');
 
         $response->assertStatus(302);
         $response->assertRedirect(route('home'));
@@ -38,13 +64,9 @@ class GuessALetterTest extends TestCase
     /** @test */
     public function a_guess_is_required()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
+        $this->createNewGame($this->user);
 
-        $response = $this->actingAs($user->fresh())->post(route('guess-letter'), [
-            'guess' => null,
-        ]);
+        $response = $this->guessALetter('');
 
         $response->assertStatus(302);
         $response->assertSessionHasErrors('guess');
@@ -53,13 +75,9 @@ class GuessALetterTest extends TestCase
     /** @test */
     public function a_guess_must_be_a_letter()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
+        $this->createNewGame($this->user);
 
-        $response = $this->actingAs($user->fresh())->post(route('guess-letter'), [
-            'guess' => '1',
-        ]);
+        $response = $this->guessALetter('1');
 
         $response->assertStatus(302);
         $response->assertSessionHasErrors('guess');
@@ -68,13 +86,9 @@ class GuessALetterTest extends TestCase
     /** @test */
     public function a_guess_must_be_one_character_long()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
+        $this->createNewGame($this->user);
 
-        $response = $this->actingAs($user->fresh())->post(route('guess-letter'), [
-            'guess' => 'ab',
-        ]);
+        $response = $this->guessALetter('ab');
 
         $response->assertStatus(302);
         $response->assertSessionHasErrors('guess');
@@ -83,19 +97,12 @@ class GuessALetterTest extends TestCase
     /** @test */
     public function a_correct_guess_will_be_stored_as_true()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
-        $user = $user->fresh();
-        $user->getActiveGame()->getActiveRound()->phrase()->update([
-            'text' => 'test',
-        ]);
+        $this->createNewGame($this->user);
+        $this->setActiveRoundPhrase('test');
 
-        $response = $this->actingAs($user)->post(route('guess-letter'), [
-            'guess' => 't',
-        ]);
+        $response = $this->guessALetter('t');
 
-        $guess = $user->fresh()->getActiveGame()->getActiveRound()->guesses;
+        $guess = $this->user->fresh()->getActiveGame()->getActiveRound()->guesses;
         $this->assertCount(1, $guess);
         $this->assertTrue($guess->first()->is_correct);
     }
@@ -103,19 +110,12 @@ class GuessALetterTest extends TestCase
     /** @test */
     public function a_incorrect_guess_will_be_stored_as_false()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
-        $user = $user->fresh();
-        $user->getActiveGame()->getActiveRound()->phrase()->update([
-            'text' => 'test',
-        ]);
+        $this->createNewGame($this->user);
+        $this->setActiveRoundPhrase('test');
 
-        $response = $this->actingAs($user)->post(route('guess-letter'), [
-            'guess' => 'a',
-        ]);
+        $response = $this->guessALetter('a');
 
-        $guess = $user->fresh()->getActiveGame()->getActiveRound()->guesses;
+        $guess = $this->user->fresh()->getActiveGame()->getActiveRound()->guesses;
         $this->assertCount(1, $guess);
         $this->assertFalse($guess->first()->is_correct);
     }
@@ -123,59 +123,35 @@ class GuessALetterTest extends TestCase
     /** @test */
     public function after_seven_incorrect_guess_the_round_will_be_completed_and_marked_as_lost()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
-        $user = $user->fresh();
-        $user->getActiveGame()->getActiveRound()->phrase()->update([
-            'text' => 'test',
-        ]);
+        $this->createNewGame($this->user);
+        $this->setActiveRoundPhrase('test');
 
         for ($i=0; $i<7; $i++) {
-            $this->actingAs($user)->post(route('guess-letter'), [
-                'guess' => 'a',
-            ]);
+            $this->guessALetter('a');
         }
 
-        $round = $user->getActiveGame()->rounds->first();
+        $round = $this->user->getActiveGame()->rounds->first();
+        $this->assertTrue($round->isComplete());
+        $this->assertFalse($round->won);
 
         $guesses = $round->guesses;
         $this->assertCount(7, $guesses);
         $guesses->each(function ($guess) {
             $this->assertFalse($guess->is_correct);
         });
-
-        $this->assertTrue($round->isComplete());
-        $this->assertFalse($round->won);
     }
 
     /** @test */
     public function if_all_the_letters_in_a_phrase_are_correctly_guessed_the_round_will_be_completed_and_marked_as_won()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
-        $user = $user->fresh();
-        $user->getActiveGame()->getActiveRound()->phrase()->update([
-            'text' => 'test',
-        ]);
+        $this->createNewGame($this->user);
+        $this->setActiveRoundPhrase('test');
 
-        $this->actingAs($user)->post(route('guess-letter'), [
-            'guess' => 't',
-        ]);
+        $this->guessALetter('t');
+        $this->guessALetter('e');
+        $this->guessALetter('s');
 
-        $user = $user->fresh();
-        $this->actingAs($user)->post(route('guess-letter'), [
-            'guess' => 'e',
-        ]);
-
-        $user = $user->fresh();
-        $this->actingAs($user)->post(route('guess-letter'), [
-            'guess' => 's',
-        ]);
-
-        $user = $user->fresh();
-        $round = $user->getActiveGame()->rounds->first();
+        $round = $this->user->getActiveGame()->rounds->first();
         $this->assertTrue($round->isComplete());
         $this->assertTrue($round->won);
     }
