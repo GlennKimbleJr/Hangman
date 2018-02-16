@@ -9,7 +9,7 @@ $factory->define(Guess::class, function (Faker $faker) {
         'round_id' => function () {
             return factory(Round::class)->create()->id;
         },
-        'letter' => $faker->word(1)[0],
+        'guess' => $faker->word(1)[0],
         'is_correct' => (bool) rand(0, 1),
     ];
 });

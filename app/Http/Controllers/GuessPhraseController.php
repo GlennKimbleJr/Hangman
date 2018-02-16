@@ -22,7 +22,7 @@ class GuessPhraseController extends Controller
         $isCorrect = $game->guessPhrase($request->guess);
 
         $game->getActiveRound()->guesses()->create([
-            'letter' => $request->guess,
+            'guess' => $request->guess,
             'is_correct' => $isCorrect,
         ]);
 

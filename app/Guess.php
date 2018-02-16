@@ -12,8 +12,8 @@ class Guess extends Model
         'is_correct' => 'boolean',
     ];
 
-    public function getLetterAttribute()
+    public function getGuessAttribute()
     {
-        return strtoupper($this->attributes['letter']);
+        return strtoupper($this->attributes['guess']);
     }
 }

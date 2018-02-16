@@ -16,7 +16,7 @@ class CreateGuessesTable extends Migration
         Schema::create('guesses', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('round_id')->unsigned();
-            $table->text('letter');
+            $table->text('guess');
             $table->boolean('is_correct');
             $table->timestamps();
 

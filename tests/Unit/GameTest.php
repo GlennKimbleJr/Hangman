@@ -87,7 +87,7 @@ class GameTest extends TestCase
         $round = $game->rounds->first();
         $correctLetter = $round->phrase->text[0];
         $round->guesses()->create([
-            'letter' => $correctLetter,
+            'guess' => $correctLetter,
             'is_correct' => true
         ]);
 

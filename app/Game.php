@@ -46,11 +46,11 @@ class Game extends Model
     {
         $correctGuesses = $this->getActiveRound()->guesses->filter(function ($guess) {
             return $guess->is_correct;
-        })->pluck('letter')->toArray();
+        })->pluck('guess')->toArray();
 
         $phrase = str_split($this->getActiveRoundPhrase()->text);
-        foreach ($phrase as $key=>$letter) {
-            if ($letter == ' ' || in_array($letter, $correctGuesses)) {
+        foreach ($phrase as $key=>$guess) {
+            if ($guess == ' ' || in_array($guess, $correctGuesses)) {
                 continue;
             }
 
