@@ -31,6 +31,6 @@ class GuessLetterController extends Controller
             $isCorrect ? 'success' : 'miss'
         );
 
-        return redirect()->to(route('home'));
+        return redirect()->to(route('play'));
     }
 }

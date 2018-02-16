@@ -60,6 +60,24 @@
         </nav>
 
         <main class="py-4">
+            @if (session('success') || session('error'))
+            <div class="container alert-box">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                        @elseif (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
             @yield('content')
         </main>
     </div>
