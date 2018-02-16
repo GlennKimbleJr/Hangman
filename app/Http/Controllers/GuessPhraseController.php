@@ -30,6 +30,10 @@ class GuessPhraseController extends Controller
             $game->getActiveRound()->markAsLost();
         }
 
+        if ($isCorrect) {
+            $game->getActiveRound()->markAsWon();
+        }
+
         Session::flash(
             $isCorrect ? 'success' : 'error',
             $isCorrect ? 'success' : 'miss'

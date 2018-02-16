@@ -44,10 +44,23 @@ class Round extends Model
         return $this->guesses()->incorrect()->count() >= self::MAX_INCORRECT_GUESSES;
     }
 
+    public function allLettersGuessed()
+    {
+        return strpos($this->game->getDisplayPhrase(), '_') === false;
+    }
+
     public function markAsLost()
     {
         $this->update([
             'won' => false,
+            'completed_at' => now(),
+        ]);
+    }
+
+    public function markAsWon()
+    {
+        $this->update([
+            'won' => true,
             'completed_at' => now(),
         ]);
     }

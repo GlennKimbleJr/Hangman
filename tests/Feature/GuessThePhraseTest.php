@@ -117,5 +117,26 @@ class GuessThePhraseTest extends TestCase
         });
 
         $this->assertTrue($round->isComplete());
+        $this->assertFalse($round->won);
+    }
+
+    /** @test */
+    public function if_the_phrase_is_correctly_guessed_the_round_will_be_completed_and_marked_as_won()
+    {
+        $phrases = factory(Phrase::class, 10)->create();
+        $user = factory(User::class)->create();
+        HangmanFactory::create($user);
+        $user = $user->fresh();
+        $user->getActiveGame()->getActiveRound()->phrase()->update([
+            'text' => 'test phrase',
+        ]);
+
+        $this->actingAs($user)->post(route('guess-phrase'), [
+            'guess' => 'test phrase',
+        ]);
+
+        $round = $user->getActiveGame()->rounds->first();
+        $this->assertTrue($round->isComplete());
+        $this->assertTrue($round->won);
     }
 }

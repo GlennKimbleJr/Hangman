@@ -147,5 +147,37 @@ class GuessALetterTest extends TestCase
         });
 
         $this->assertTrue($round->isComplete());
+        $this->assertFalse($round->won);
+    }
+
+    /** @test */
+    public function if_all_the_letters_in_a_phrase_are_correctly_guessed_the_round_will_be_completed_and_marked_as_won()
+    {
+        $phrases = factory(Phrase::class, 10)->create();
+        $user = factory(User::class)->create();
+        HangmanFactory::create($user);
+        $user = $user->fresh();
+        $user->getActiveGame()->getActiveRound()->phrase()->update([
+            'text' => 'test',
+        ]);
+
+        $this->actingAs($user)->post(route('guess-letter'), [
+            'guess' => 't',
+        ]);
+
+        $user = $user->fresh();
+        $this->actingAs($user)->post(route('guess-letter'), [
+            'guess' => 'e',
+        ]);
+
+        $user = $user->fresh();
+        $this->actingAs($user)->post(route('guess-letter'), [
+            'guess' => 's',
+        ]);
+
+        $user = $user->fresh();
+        $round = $user->getActiveGame()->rounds->first();
+        $this->assertTrue($round->isComplete());
+        $this->assertTrue($round->won);
     }
 }
