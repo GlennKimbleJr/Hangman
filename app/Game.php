@@ -69,4 +69,9 @@ class Game extends Model
     {
         return strpos(strtoupper($this->getActiveRoundPhrase()->text), strtoupper($letter)) !== false;
     }
+
+    public function guessPhrase($phrase)
+    {
+        return strtoupper($this->getActiveRoundPhrase()->text) == strtoupper($phrase);
+    }
 }

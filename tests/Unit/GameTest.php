@@ -107,4 +107,18 @@ class GameTest extends TestCase
         $this->assertTrue($game->guessLetter('s'));
         $this->assertFalse($game->guessLetter('x'));
     }
+
+    /** @test */
+    public function guess_phrase_returns_true_if_the_input_matches_the_current_rounds_phrase()
+    {
+        factory(Phrase::class, 10)->create();
+        $game = factory(Game::class)->create();
+        $game->createRounds();
+        $game->getActiveRound()->phrase()->update([
+            'text' => 'this is the correct guess',
+        ]);
+
+        $this->assertTrue($game->guessPhrase('this is the correct guess'));
+        $this->assertFalse($game->guessPhrase('this is NOT the correct guess'));
+    }
 }
