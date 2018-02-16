@@ -16,7 +16,7 @@ class HangmanFactory
         }
 
         $game = $user->games()->create([]);
-        
+
         if (!$game->createRounds()) {
             $game->delete();
 
