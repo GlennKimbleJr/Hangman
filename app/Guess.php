@@ -12,6 +12,11 @@ class Guess extends Model
         'is_correct' => 'boolean',
     ];
 
+    public function scopeIncorrect($query)
+    {
+        return $query->whereIsCorrect(0);
+    }
+
     public function getGuessAttribute()
     {
         return strtoupper($this->attributes['guess']);

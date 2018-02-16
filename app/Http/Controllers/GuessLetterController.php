@@ -26,6 +26,10 @@ class GuessLetterController extends Controller
             'is_correct' => $isCorrect,
         ]);
 
+        if (!$isCorrect && $game->getActiveRound()->maxGuessesReached()) {
+            $game->getActiveRound()->markAsLost();
+        }
+
         Session::flash(
             $isCorrect ? 'success' : 'error',
             $isCorrect ? 'success' : 'miss'

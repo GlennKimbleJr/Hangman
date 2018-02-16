@@ -90,4 +90,32 @@ class GuessThePhraseTest extends TestCase
         $this->assertCount(1, $guess);
         $this->assertFalse($guess->first()->is_correct);
     }
+
+    /** @test */
+    public function after_seven_incorrect_guess_the_round_will_be_completed_and_marked_as_lost()
+    {
+        $phrases = factory(Phrase::class, 10)->create();
+        $user = factory(User::class)->create();
+        HangmanFactory::create($user);
+        $user = $user->fresh();
+        $user->getActiveGame()->getActiveRound()->phrase()->update([
+            'text' => 'test',
+        ]);
+
+        for ($i=0; $i<7; $i++) {
+            $this->actingAs($user)->post(route('guess-phrase'), [
+                'guess' => 'test phrase',
+            ]);
+        }
+
+        $round = $user->getActiveGame()->rounds->first();
+
+        $guesses = $round->guesses;
+        $this->assertCount(7, $guesses);
+        $guesses->each(function ($guess) {
+            $this->assertFalse($guess->is_correct);
+        });
+
+        $this->assertTrue($round->isComplete());
+    }
 }
