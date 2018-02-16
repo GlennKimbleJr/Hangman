@@ -22,6 +22,7 @@ class PlayGameController extends Controller
         return view('play', [
             'phrase' => $game->getDisplayPhrase(),
             'guesses' => $game->getActiveRound()->getIncorretGuesses(),
+            'rounds' => $game->rounds,
         ]);
     }
 }

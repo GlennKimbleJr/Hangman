@@ -48,5 +48,22 @@
             </div>
         </div>
     </div>
+    <br>
+
+    @if ($rounds->count())
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card-header bg-dark text-white">Results</div>
+            <div class="card-body bg-secondary">
+                @foreach ($rounds as $round)
+                    @if ($round->isComplete())
+                        <span class="badge badge-pill {{ $round->won ? 'badge-success' : 'badge-danger' }}">{{ $round->phrase->text }}</span>
+                    @endif
+                @endforeach
+            </div>
+        </div>
+    </div>
+    <br>
+    @endif
 </div>
 @endsection

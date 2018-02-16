@@ -63,4 +63,23 @@ class PlayGameTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('ASDF');
     }
+
+    /** @test */
+    public function round_results_will_be_displayed()
+    {
+        $phrases = factory(Phrase::class, 10)->create();
+        $user = factory(User::class)->create();
+        HangmanFactory::create($user);
+
+        $game = $user->fresh()->getActiveGame();
+        $game->getActiveRound()->markAsWon();
+        $phrase = $game->rounds->first()->phrase->text;
+
+        $response = $this->actingAs($user->fresh())->get(route('play'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Results');
+        $response->assertSee('badge-success');
+        $response->assertSee($phrase);
+    }
 }
