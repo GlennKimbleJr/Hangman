@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Phrase extends Model
 {
+    protected $guarded = [];
+
     public function scopeforGame($query, $letterCount)
     {
         return $query->inRandomOrder()

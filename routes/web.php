@@ -21,4 +21,5 @@ Route::middleware('auth')->group(function () {
     Route::get('home', 'HomeController@index')->name('home');
     Route::get('hangman', 'PlayGameController@index')->name('play');
     Route::post('hangman', 'NewGameController@store')->name('new-game');
+    Route::post('guess/letter', 'GuessLetterController@store')->name('guess-letter');
 });

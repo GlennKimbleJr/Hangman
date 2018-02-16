@@ -20,7 +20,7 @@ class Game extends Model
         return (bool) !$this->getActiveRound();
     }
 
-    private function getActiveRound()
+    public function getActiveRound()
     {
         return $this->rounds->reject(function ($round) {
             return $round->isComplete();
@@ -63,5 +63,10 @@ class Game extends Model
     private function getActiveRoundPhrase()
     {
         return $this->getActiveRound()->phrase;
+    }
+
+    public function guessLetter($letter)
+    {
+        return strpos(strtoupper($this->getActiveRoundPhrase()->text), strtoupper($letter)) !== false;
     }
 }

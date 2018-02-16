@@ -93,4 +93,18 @@ class GameTest extends TestCase
 
         $this->assertContains($correctLetter, $game->getDisplayPhrase());
     }
+
+    /** @test */
+    public function guess_letter_returns_true_if_the_input_exists_in_the_current_rounds_phrase()
+    {
+        factory(Phrase::class, 10)->create();
+        $game = factory(Game::class)->create();
+        $game->createRounds();
+        $game->getActiveRound()->phrase()->update([
+            'text' => 'test',
+        ]);
+
+        $this->assertTrue($game->guessLetter('s'));
+        $this->assertFalse($game->guessLetter('x'));
+    }
 }
