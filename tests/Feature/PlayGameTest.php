@@ -11,6 +11,20 @@ class PlayGameTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp()
+    {
+        parent::setUp();
+
+        factory(Phrase::class, 10)->create();
+
+        $this->user = factory(User::class)->create();
+    }
+
+    protected function visitPlayGamePage()
+    {
+        return $this->actingAs($this->user)->get(route('play'));
+    }
+
     /** @test */
     public function a_guest_cannot_play_a_game()
     {
@@ -23,10 +37,9 @@ class PlayGameTest extends TestCase
     /** @test */
     public function a_user_cannot_play_a_game_without_a_game_in_progress()
     {
-        $user = factory(User::class)->create();
-        $this->assertFalse($user->hasGameInProgress());
+        $this->assertFalse($this->user->hasGameInProgress());
 
-        $response = $this->actingAs($user)->get(route('play'));
+        $response = $this->visitPlayGamePage();
 
         $response->assertStatus(302);
         $response->assertRedirect(route('home'));
@@ -36,28 +49,24 @@ class PlayGameTest extends TestCase
     /** @test */
     public function the_phrase_for_the_current_round_will_be_displayed()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
+        $this->createNewGame($this->user);
 
-        $response = $this->actingAs($user->fresh())->get(route('play'));
+        $response = $this->visitPlayGamePage();
 
         $response->assertStatus(200);
-        $response->assertSee($user->fresh()->getActiveGame()->getDisplayPhrase());
+        $response->assertSee($this->user->getActiveGame()->getDisplayPhrase());
     }
 
     /** @test */
     public function incorrect_guesses_will_be_displayed()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
+        $this->createNewGame($this->user);
 
-        $response = $this->actingAs($user->fresh())->post(route('guess-phrase'), [
+        $this->actingAs($this->user)->post(route('guess-phrase'), [
             'guess' => 'asdf',
         ]);
 
-        $response = $this->actingAs($user->fresh())->get(route('play'));
+        $response = $this->visitPlayGamePage();
 
         $response->assertStatus(200);
         $response->assertSee('ASDF');
@@ -66,15 +75,12 @@ class PlayGameTest extends TestCase
     /** @test */
     public function round_results_will_be_displayed()
     {
-        $phrases = factory(Phrase::class, 10)->create();
-        $user = factory(User::class)->create();
-        $this->createNewGame($user);
-
-        $game = $user->fresh()->getActiveGame();
+        $this->createNewGame($this->user);
+        $game = $this->user->getActiveGame();
         $game->getActiveRound()->markAsWon();
         $phrase = $game->rounds->first()->phrase->text;
 
-        $response = $this->actingAs($user->fresh())->get(route('play'));
+        $response = $this->visitPlayGamePage();
 
         $response->assertStatus(200);
         $response->assertSee('Results');
