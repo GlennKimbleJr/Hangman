@@ -15,9 +15,7 @@
                     @endif
 
                     @if (Auth::user()->hasGameInProgress())
-                        <form method="GET" action="{{ route('play') }}">
-                            <button class="btn btn-lg btn-info">Continue Game</button>
-                        </form>
+                        <a href="{{ route('play') }}" class="btn btn-lg btn-info">Continue Game</a>
                     @else
                         <form method="POST" action="{{ route('new-game') }}">
                             {{ csrf_field() }}
