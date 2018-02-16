@@ -12,6 +12,15 @@ class NewGameTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp()
+    {
+        parent::setUp();
+
+        factory(Phrase::class, 10)->create();
+
+        $this->user = factory(User::class)->create();
+    }
+
     /** @test */
     public function a_guest_cannot_start_a_new_game()
     {
@@ -24,52 +33,42 @@ class NewGameTest extends TestCase
     /** @test */
     public function a_user_can_start_a_new_game()
     {
-        factory(Phrase::class, 10)->create();
 
-        $user = factory(User::class)->create();
-
-        $response = $this->createNewGame($user);
+        $response = $this->createNewGame($this->user);
 
         $response->assertRedirect(route('play'));
-        $this->assertCount(1, $user->fresh()->games);
+        $this->assertCount(1, $this->user->fresh()->games);
     }
 
     /** @test */
     public function a_user_cannot_start_a_new_game_if_an_existing_game_is_in_progress()
     {
-        $user = factory(User::class)->create();
-        $game = $user->games()->create([]);
+        $game = $this->user->games()->create([]);
         $round = factory(Round::class)->create();
         $round->game()->associate($game)->save();
 
-        $response = $this->createNewGame($user);
+        $response = $this->createNewGame($this->user);
 
         $response->assertSessionHas('error');
-        $this->assertCount(1, $user->fresh()->games);
+        $this->assertCount(1, $this->user->fresh()->games);
     }
 
     /** @test */
     public function a_new_game_will_consist_of_10_rounds()
     {
-        factory(Phrase::class, 10)->create();
+        $response = $this->createNewGame($this->user);
 
-        $user = factory(User::class)->create();
-
-        $response = $this->createNewGame($user);
-
-        $this->assertCount(10, $user->fresh()->games->first()->rounds);
+        $this->assertCount(10, $this->user->games->first()->rounds);
     }
 
     /** @test */
     public function a_new_game_will_not_be_created_if_there_are_not_enough_qualifying_phrases_for_10_rounds()
     {
-        factory(Phrase::class, 9)->create();
+        Phrase::first()->delete();
 
-        $user = factory(User::class)->create();
-
-        $response = $this->createNewGame($user);
+        $response = $this->createNewGame($this->user);
 
         $response->assertSessionHas('error');
-        $this->assertCount(0, $user->fresh()->games);
+        $this->assertCount(0, $this->user->fresh()->games);
     }
 }
