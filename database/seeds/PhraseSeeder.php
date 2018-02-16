@@ -20,7 +20,6 @@ class PhraseSeeder extends Seeder
         DB::table('phrases')->insert(['text' => 'Father Knows Best']);
         DB::table('phrases')->insert(['text' => 'Fred Flinstone and Barney Rubble']);
         DB::table('phrases')->insert(['text' => 'Ginger Mary Ann and The Professor']);
-        DB::table('phrases')->insert(['text' => 'He-Man And The Masters Of The Universe']);
         DB::table('phrases')->insert(['text' => 'Hugo Weaving As Agent Smith']);
         DB::table('phrases')->insert(['text' => 'I Dream Of Jeannie']);
         DB::table('phrases')->insert(['text' => 'Lost In Space']);
