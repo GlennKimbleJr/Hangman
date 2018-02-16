@@ -6,7 +6,7 @@ use App\Round;
 use Illuminate\Database\Eloquent\Model;
 
 class Game extends Model
-{   
+{
     public function rounds()
     {
         return $this->hasMany(Round::class);
@@ -26,25 +26,29 @@ class Game extends Model
 
     public function getDisplayPhrase()
     {
-        $correctGuesses = $this->getActiveRound()->guesses->filter(function ($guess) {
-            return $guess->is_correct;
-        })->pluck('guess')->toArray();
-
+        $correctGuesses = $this->getCorrectGusses();
         $phrase = str_split($this->getActiveRoundPhrase()->text);
-        foreach ($phrase as $key=>$guess) {
-            if ($guess == ' ' || in_array($guess, $correctGuesses)) {
-                continue;
-            }
 
-            $phrase[$key] = '_';
-        }
+        return collect($phrase)->transform(function ($letter) use ($correctGuesses) {
+            return $this->shouldDisplayLetter($letter, $correctGuesses) ? $letter : '_';
+        })->implode('');
+    }
 
-        return implode('', $phrase);
+    private function getCorrectGusses()
+    {
+        return $this->getActiveRound()->guesses->filter(function ($guess) {
+            return $guess->is_correct;
+        })->pluck('guess');
     }
 
     private function getActiveRoundPhrase()
     {
         return $this->getActiveRound()->phrase;
+    }
+
+    private function shouldDisplayLetter($letter, $guesses)
+    {
+        return $letter == ' ' || $guesses->contains($letter);
     }
 
     public function guessLetter($letter)
