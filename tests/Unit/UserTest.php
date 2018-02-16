@@ -11,55 +11,59 @@ class UserTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->user = factory(User::class)->create();
+    }
+
     /** @test */
     public function has_game_in_progress_returns_true_if_any_of_a_users_games_are_incomplete()
     {
-        $user = factory(User::class)->create();
+        $this->incompleteGame();
+        $this->completeGame();
 
-        $incompleteGame = $user->games()->create([]);
-        $incompleteRound = factory(Round::class)->create();
-        $incompleteRound->game()->associate($incompleteGame)->save();
-
-        $completeGame = $user->games()->create([]);
-        $completeRound = factory(Round::class)->create([
-            'completed_at' => now(),
-        ]);
-        $completeRound->game()->associate($completeGame)->save();
-
-        $this->assertTrue($user->hasGameInProgress());
+        $this->assertTrue($this->user->hasGameInProgress());
     }
 
     /** @test */
     public function has_game_in_progress_returns_false_if_all_of_a_users_games_are_complete()
     {
-        $user = factory(User::class)->create();
+        $this->completeGame();
 
-        $completeGame = $user->games()->create([]);
-        $completeRound = factory(Round::class)->create([
-            'completed_at' => now(),
-        ]);
-        $completeRound->game()->associate($completeGame)->save();
-
-        $this->assertFalse($user->hasGameInProgress());
+        $this->assertFalse($this->user->hasGameInProgress());
     }
 
     /** @test */
     public function get_active_game_returns_the_active_game()
     {
-        $user = factory(User::class)->create();
+        $incompleteGame = $this->incompleteGame();
+        $completeGame = $this->completeGame();
 
-        $incompleteGame = $user->games()->create([]);
-        $incompleteRound = factory(Round::class)->create();
-        $incompleteRound->game()->associate($incompleteGame)->save();
-
-        $completeGame = $user->games()->create([]);
-        $completeRound = factory(Round::class)->create([
-            'completed_at' => now(),
-        ]);
-        $completeRound->game()->associate($completeGame)->save();
-
-        $activeGame = $user->fresh()->getActiveGame();
+        $activeGame = $this->user->getActiveGame();
         $this->assertEquals($incompleteGame->id, $activeGame->id);
         $this->assertNotEquals($completeGame->id, $activeGame->id);
+    }
+
+    protected function incompleteGame()
+    {
+        return $this->createGame(false);;
+    }
+
+    protected function completeGame()
+    {
+        return $this->createGame(true);;
+    }
+
+    protected function createGame($complete = false)
+    {
+        $game = $this->user->games()->create();
+
+        factory(Round::class)->create([
+            'completed_at' => $complete ? now() : null,
+        ])->game()->associate($game)->save();
+
+        return $game;
     }
 }
