@@ -35,8 +35,13 @@ class User extends Authenticatable
 
     public function hasGameInProgress()
     {
+        return (bool) $this->getActiveGame();
+    }
+
+    public function getActiveGame()
+    {
         return $this->games->reject(function ($game) {
             return $game->isComplete();
-        })->isNotEmpty();
+        })->first();
     }
 }

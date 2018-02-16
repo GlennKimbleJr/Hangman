@@ -42,4 +42,24 @@ class UserTest extends TestCase
 
         $this->assertFalse($user->hasGameInProgress());
     }
+
+    /** @test */
+    public function get_active_game_returns_the_active_game()
+    {
+        $user = factory(User::class)->create();
+
+        $incompleteGame = $user->games()->create([]);
+        $incompleteRound = factory(Round::class)->create();
+        $incompleteRound->game()->associate($incompleteGame)->save();
+
+        $completeGame = $user->games()->create([]);
+        $completeRound = factory(Round::class)->create([
+            'winner' => true,
+        ]);
+        $completeRound->game()->associate($completeGame)->save();
+
+        $activeGame = $user->fresh()->getActiveGame();
+        $this->assertEquals($incompleteGame->id, $activeGame->id);
+        $this->assertNotEquals($completeGame->id, $activeGame->id);
+    }
 }

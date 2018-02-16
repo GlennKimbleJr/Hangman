@@ -52,4 +52,15 @@ class PhraseTest extends TestCase
         $this->assertCount(1, $rounds);
         $this->assertEquals($phrase->id, $rounds->first()->phrase_id);
     }
+
+    /** @test */
+    public function the_text_attribute_always_returns_upper_case()
+    {
+        $phrase = factory(Phrase::class)->create([
+            'text' => 'lower case words',
+        ]);
+
+        $this->assertEquals('LOWER CASE WORDS', $phrase->text);
+        $this->assertNotEquals('lower case words', $phrase->text);
+    }
 }

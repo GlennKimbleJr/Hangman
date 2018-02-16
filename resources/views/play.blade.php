@@ -14,7 +14,7 @@
                         </div>
                     @endif
 
-                    Game in progress.
+                    <h1>{{ $phrase }}</h1>
                 </div>
             </div>
         </div>

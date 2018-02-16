@@ -17,9 +17,14 @@ class Game extends Model
 
     public function isComplete()
     {
+        return (bool) !$this->getActiveRound();
+    }
+
+    private function getActiveRound()
+    {
         return $this->rounds->reject(function ($round) {
             return $round->isComplete();
-        })->isEmpty();
+        })->first();
     }
 
     public function createRounds()
@@ -35,5 +40,28 @@ class Game extends Model
         });
 
         return true;
+    }
+
+    public function getDisplayPhrase()
+    {
+        $correctGuesses = $this->getActiveRound()->guesses->filter(function ($guess) {
+            return $guess->is_correct;
+        })->pluck('letter')->toArray();
+
+        $phrase = str_split($this->getActiveRoundPhrase()->text);
+        foreach ($phrase as $key=>$letter) {
+            if ($letter == ' ' || in_array($letter, $correctGuesses)) {
+                continue;
+            }
+
+            $phrase[$key] = '_';
+        }
+
+        return implode('', $phrase);
+    }
+
+    private function getActiveRoundPhrase()
+    {
+        return $this->getActiveRound()->phrase;
     }
 }

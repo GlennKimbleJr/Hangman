@@ -63,4 +63,34 @@ class GameTest extends TestCase
 
         $this->assertFalse($game->createRounds());
     }
+
+    /** @test */
+    public function get_display_phrase_will_convert_all_alphabetical_characeters_to_an_underscore()
+    {
+        factory(Phrase::class, 10)->create();
+        $game = factory(Game::class)->create();
+        $game->createRounds();
+
+        $expectedPhrase = $game->rounds->first()->phrase->text;
+        $expectedPhrase = preg_replace("/[A-Za-z]/", '_', $expectedPhrase);
+
+        $this->assertEquals($expectedPhrase, $game->getDisplayPhrase());
+    }
+
+    /** @test */
+    public function get_display_phrase_will_show_corrected_guessed_characters()
+    {
+        factory(Phrase::class, 10)->create();
+        $game = factory(Game::class)->create();
+        $game->createRounds();
+
+        $round = $game->rounds->first();
+        $correctLetter = $round->phrase->text[0];
+        $round->guesses()->create([
+            'letter' => $correctLetter,
+            'is_correct' => true
+        ]);
+
+        $this->assertContains($correctLetter, $game->getDisplayPhrase());
+    }
 }

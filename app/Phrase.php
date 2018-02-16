@@ -13,6 +13,11 @@ class Phrase extends Model
             ->whereRaw("LENGTH(replace(text, ' ', '')) >= ?", [$letterCount]);
     }
 
+    public function getTextAttribute()
+    {
+        return strtoupper($this->attributes['text']);
+    }
+
     public function addToGame(Game $game)
     {
         $game->rounds()->create([
