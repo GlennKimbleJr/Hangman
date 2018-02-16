@@ -38,9 +38,7 @@ class RoundTest extends TestCase
         $round = factory(Round::class)->create();
 
         for ($i=0; $i<7; $i++) {
-            $round->guesses()->create(factory(Guess::class)->make([
-                'is_correct' => false,
-            ])->toArray());
+            $this->guessALetter($round, '', false);
         }
 
         $this->assertTrue($round->fresh()->maxGuessesReached());
@@ -79,31 +77,20 @@ class RoundTest extends TestCase
             'phrase_id' => $phrase->id,
         ]);
 
-        $round->guesses()->create(factory(Guess::class)->make([
-            'guess' => 'c',
-            'is_correct' => true,
-        ])->toArray());
-
-        $round->guesses()->create(factory(Guess::class)->make([
-            'guess' => 'o',
-            'is_correct' => true,
-        ])->toArray());
-
-        $round->guesses()->create(factory(Guess::class)->make([
-            'guess' => 'r',
-            'is_correct' => true,
-        ])->toArray());
-
-        $round->guesses()->create(factory(Guess::class)->make([
-            'guess' => 'e',
-            'is_correct' => true,
-        ])->toArray());
-
-        $round->guesses()->create(factory(Guess::class)->make([
-            'guess' => 't',
-            'is_correct' => true,
-        ])->toArray());
+        $this->guessALetter($round, 'c', true);
+        $this->guessALetter($round, 'o', true);
+        $this->guessALetter($round, 'r', true);
+        $this->guessALetter($round, 'e', true);
+        $this->guessALetter($round, 't', true);
 
         $this->assertTrue($round->fresh()->allLettersGuessed());
+    }
+
+    protected function guessALetter($round, $letter, $correct)
+    {
+        $round->guesses()->create(factory(Guess::class)->make([
+            'guess' => $letter,
+            'is_correct' => $correct,
+        ])->toArray());
     }
 }
