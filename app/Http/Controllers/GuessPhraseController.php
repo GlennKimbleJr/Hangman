@@ -10,15 +10,7 @@ class GuessPhraseController extends Controller
 {
     public function store(GuessPhraseRequest $request)
     {
-        $user = Auth::user();
-
-        if (!$user->hasGameInProgress()) {
-            Session::flash('error', 'You must first start a game.');
-
-            return redirect()->to(route('home'));
-        }
-
-        $game = $user->getActiveGame();
+        $game = Auth::user()->getActiveGame();
         $isCorrect = $game->guessPhrase($request->guess);
         $game->getActiveRound()->guesses()->create([
             'guess' => $request->guess,

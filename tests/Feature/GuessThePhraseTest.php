@@ -43,7 +43,7 @@ class GuessThePhraseTest extends TestCase
         $user = factory(User::class)->create();
         HangmanFactory::create($user);
 
-        $response = $this->actingAs($user)->post(route('guess-phrase'), [
+        $response = $this->actingAs($user->fresh())->post(route('guess-phrase'), [
             'guess' => null,
         ]);
 

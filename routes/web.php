@@ -19,8 +19,11 @@ Auth::routes();
 
 Route::middleware('auth')->group(function () {
     Route::get('home', 'HomeController@index')->name('home');
-    Route::get('hangman', 'PlayGameController@index')->name('play');
     Route::post('hangman', 'NewGameController@store')->name('new-game');
-    Route::post('guess/letter', 'GuessLetterController@store')->name('guess-letter');
-    Route::post('guess/phrase', 'GuessPhraseController@store')->name('guess-phrase');
+
+    Route::middleware('hasGameInProgress')->group(function () {
+        Route::get('hangman', 'PlayGameController@index')->name('play');
+        Route::post('guess/letter', 'GuessLetterController@store')->name('guess-letter');
+        Route::post('guess/phrase', 'GuessPhraseController@store')->name('guess-phrase');
+    });
 });

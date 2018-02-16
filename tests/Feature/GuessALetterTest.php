@@ -43,7 +43,7 @@ class GuessALetterTest extends TestCase
         $user = factory(User::class)->create();
         HangmanFactory::create($user);
 
-        $response = $this->actingAs($user)->post(route('guess-letter'), [
+        $response = $this->actingAs($user->fresh())->post(route('guess-letter'), [
             'guess' => null,
         ]);
 
@@ -58,7 +58,7 @@ class GuessALetterTest extends TestCase
         $user = factory(User::class)->create();
         HangmanFactory::create($user);
 
-        $response = $this->actingAs($user)->post(route('guess-letter'), [
+        $response = $this->actingAs($user->fresh())->post(route('guess-letter'), [
             'guess' => '1',
         ]);
 
@@ -73,7 +73,7 @@ class GuessALetterTest extends TestCase
         $user = factory(User::class)->create();
         HangmanFactory::create($user);
 
-        $response = $this->actingAs($user)->post(route('guess-letter'), [
+        $response = $this->actingAs($user->fresh())->post(route('guess-letter'), [
             'guess' => 'ab',
         ]);
 
