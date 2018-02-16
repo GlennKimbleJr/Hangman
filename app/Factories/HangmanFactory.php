@@ -10,6 +10,8 @@ use App\Exceptions\ErrorCreatingGameException;
 
 class HangmanFactory
 {
+    public const MAX_INCORRECT_GUESSES = 7;
+
     public const MIN_LETTER_COUNT = 5;
 
     public const TOTAL_ROUNDS = 10;

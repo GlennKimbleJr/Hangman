@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Factories\HangmanFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Http\Requests\GuessLetterRequest;
@@ -42,7 +43,7 @@ class GuessLetterController extends Controller
 
     private function gameIsLost($game, $isCorrect)
     {
-        if (!$isCorrect && $game->getActiveRound()->maxGuessesReached()) {
+        if (!$isCorrect && $game->getActiveRound()->maxGuessesReached(HangmanFactory::MAX_INCORRECT_GUESSES)) {
             Session::flash('error', 'failed');
 
             $game->getActiveRound()->markAsLost();

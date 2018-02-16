@@ -41,7 +41,7 @@ class RoundTest extends TestCase
             $this->guessALetter($round, '', false);
         }
 
-        $this->assertTrue($round->fresh()->maxGuessesReached());
+        $this->assertTrue($round->fresh()->maxGuessesReached(7));
     }
 
     /** @test */

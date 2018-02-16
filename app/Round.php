@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Round extends Model
 {
-    public const MAX_INCORRECT_GUESSES = 7;
-
     protected $guarded = [];
 
     protected $dates = ['completed_at'];
@@ -39,9 +37,9 @@ class Round extends Model
         return (bool) $this->completed_at;
     }
 
-    public function maxGuessesReached()
+    public function maxGuessesReached($maxNumber)
     {
-        return $this->guesses()->incorrect()->count() >= self::MAX_INCORRECT_GUESSES;
+        return $this->guesses()->incorrect()->count() >= $maxNumber;
     }
 
     public function getIncorretGuesses()
